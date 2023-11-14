@@ -9,7 +9,7 @@ import random
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 '
                   'Safari/537.36',
-}
+} #Stole this from another repo
 def get_soup(url):
     response = requests.get(url, headers=headers)
     page = response.text
@@ -28,7 +28,8 @@ def get_data(soup):
         if row:
             data.append(row)
     return data
-def get_next_page(soup):
+
+def get_next_pages(soup):
     div = soup.find('div', class_='pagenumbers')
     if div is None:
         return None
@@ -50,8 +51,8 @@ def worker(url_queue, data_lock, df_list):
             link = f"https://aviation-safety.net/wikibase/dblist.php?Year={year}&page={page}"
             soup = get_soup(link)
             data = get_data(soup)
-            if page == 1:
-                next_page = get_next_page(soup)
+            if page == 1: # If first page, get the rest of the pages and add to queue
+                next_page = get_next_pages(soup)
                 if next_page:
                     for page in next_page:
                         url_queue.put((year, page))
@@ -64,7 +65,7 @@ def worker(url_queue, data_lock, df_list):
             # Signal to the queue that task is done
             url_queue.task_done()
             time.sleep(random.randint(1, 2))
-def print_queue_size():
+def print_queue_size(): # Print the queue size every 2 seconds kind of useless LOL
     last=1
     while True:
         print("Queue size: {}".format(url_queue.qsize()))
@@ -73,8 +74,8 @@ def print_queue_size():
             break
         last = url_queue.qsize()
 
-url_queue = queue.Queue()
-data_lock = threading.Lock()
+url_queue = queue.Queue() # Queue of URLs to process
+data_lock = threading.Lock()    # Lock to serialize console output
 def main():
     years = range(1902, 2024)
     num_threads = 100  # Number of threads
