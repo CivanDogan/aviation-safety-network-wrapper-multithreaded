@@ -112,7 +112,7 @@ def main():
     df.columns = ["date", "type", "reg", "operator", "fat", "location", "dmg"]
 
     #sort by date
-    df = df.sort_values(by=['date'])
+    df = df.sort_values(by=['date'], key=lambda x: pd.to_datetime(x, format="%d-%b-%Y", errors='coerce'))
     #save to
     df.to_csv("data.csv", index=False)
     print("Saved to data.csv")
