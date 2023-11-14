@@ -64,7 +64,7 @@ def worker(url_queue, data_lock, df_list):
         finally:
             # Signal to the queue that task is done
             url_queue.task_done()
-            time.sleep(random.randint(1, 2))
+            #time.sleep(0.1)
 def print_queue_size(): # Print the queue size every 2 seconds kind of useless LOL
     last=1
     while True:
@@ -78,7 +78,7 @@ url_queue = queue.Queue() # Queue of URLs to process
 data_lock = threading.Lock()    # Lock to serialize console output
 def main():
     years = range(1902, 2024)
-    num_threads = 100  # Number of threads
+    num_threads = 16 # Number of threads
 
     df_list = []
 
